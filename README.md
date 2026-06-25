@@ -1,125 +1,252 @@
-# docker-django-react
 
-## Project Status
+---
 
-**Dec 2023**
-Although I do not use Django or React these days, I know someone who does.  Special thanks to @crhowell for helping me get this updated after three years of neglect.  Seems like a few people have found it useful, so we will try to give it a little more love.  Latest updates are mostly lessons learned, house keeping and version bumps.
+# Full-Stack Django + React + PostgreSQL + Nginx + Docker
 
-## Basics
+A production-ready full-stack boilerplate using  Django (REST API) ,  React (Frontend) ,  PostgreSQL , and  Nginx , fully containerized with Docker.
 
-A slightly opinionated local dev full stack template using docker-compose with Django backend and React frontend; all served behind NGINX. Keeping the full stack in one repo for ease of use. Composed of ideas from multiple tutorials, forum threads and official docs. Nothing original here.
+---
 
-## Main Frameworks/Libraries/Packages
+##  Project Overview
 
-Please see requirements.txt and package.json for full details.
+This project demonstrates a modern full-stack architecture:
 
-Django
+*  Backend: Django + Django REST Framework
+*  Frontend: React (Create React App)
+*  Database: PostgreSQL
+*  Reverse Proxy: Nginx
+*  Containerization: Docker + Docker Compose
+*  Authentication: JWT (SimpleJWT)
 
-- Django v5
-- Django Rest Framework
-- Django Rest Framework Simple JWT
-- PyTest
+---
 
-React
-
-- Create React App
-- Node dev server via Docker LTS alpine image
-- Hot reload
-
-Postgress
-
-- Docker v16.1 alpine image
-
-Ngnix
-
-- Docker stable alpine
-- Serves Django's static and media files as well.  See conf for details.
-
-## Notes
-
-Django
-
-- One app created/installed called core
-- Custom user stubbed out in the Core app. No additional fields. Just a blank class that inherets AbstractUser. core.User is assigned as AUTH_USER_MODEL
-- SimpleJWT is installed but not used.
-
-## Fork or Template
-
-Feel free to fork at will but it may be handier as template. The following are the steps I had in mind for using it as a project template:
-
-1. Create a new repo on GitHub without ReadMe
-2. On your local dev machine, and in your preferred parent directory:
-
-```sh
-
-$> git clone https://github.com/cglusky/docker-django-react.git <new-local-repo-dir>
-$> cd <new-local-repo-dir>
-$> git remote set-url origin <url-new-remote-repo-created-in-step-1>
-$> git push -u origin master
+##  Architecture
 
 ```
-
-### Edit And Rename .env-example
-
-All services expect to read env variables from .env.dev file. Please make sure you review the example and change the name to env.dev. AND that your gitignore handles env files before you commit super secret stuff to a public repo.
-
-### Useful Commands
-
-Build containers. Add -up flag to bring services up after build.
-
-```sh
-
-$> docker compose build
-
+React (Frontend)  →  Nginx  →  Django API  →  PostgreSQL
+                          ↘ JWT Auth System
 ```
 
-Bring containers up. Add -d flag to run output detached from current shell.
+---
 
-```sh
+##  Services
 
-$> docker compose up
+| Service     | Port | Description      |
+| ----------- | ---- | ---------------- |
+| React       | 3001 | Frontend UI      |
+| Django      | 8001 | REST API Backend |
+| Nginx       | 8080 | Reverse Proxy    |
+| Postgres    | 5432 | Database         |
+| code-server | 9001 | Development IDE  |
+
+---
+
+##  Tech Stack
+
+* Django 5.x
+* Django REST Framework
+* SimpleJWT Authentication
+* React 18
+* Axios
+* PostgreSQL 16
+* Nginx
+* Docker & Docker Compose
+
+---
+
+##  Project Structure
 
 ```
-
-Bring containers down. Add -v flag to also delete named volumes
-
-```sh
-
-$> docker compose down
-
+docker-django-react/
+│
+├── backend/          # Django project
+├── frontend/         # React app
+├── nginx/            # Nginx config
+├── docker-compose.yml
+└── .env.dev
 ```
 
-View logs by service name.
+---
 
-```sh
+##  Getting Started
 
-$> docker compose logs <service-name>
+### 1. Clone repository
 
+```bash
+git clone https://github.com/YOUR_USERNAME/django-react-production-stack.git
+cd django-react-production-stack
 ```
 
-Enter shell for specified container (must be running)
+---
 
-```sh
+### 2. Build & Run with Docker
 
-$> docker exec -it <container-name> sh
-
+```bash
+docker-compose up --build
 ```
 
-### Containers, Services and Ports
+---
 
-| Container  | Service | Host Port | Docker Port |
-| ---------- | ------- | --------- | ----------- |
-| dev-django | django  | 8001      | 8000        |
-| dev-react  | react   | 3001      | 3000        |
-| dev-db     | db      | 5432      | 5432        |
-| dev-nginx  | nginx   | 8080      | 80          |
+### 3. Access Services
 
-### Why NGINX for local dev?
+* Frontend: [http://localhost:3001](http://localhost:3001)
+* Nginx Gateway: [http://localhost:8080](http://localhost:8080)
+* Django API: [http://localhost:8001/api/](http://localhost:8001/api/)
+* Admin Panel: [http://localhost:8001/admin](http://localhost:8001/admin)
 
-Cross-Origin Resource Sharing(CORS) issues will make your browser sad when you serve your site from different ports as we do with this architecture. Using NGINX to proxy requests/responses to/from the correct container/service/ports helps make your browser happy. And it simulates real world infrastructure as a bonus. So...
+---
 
-Please make all requests from your browser through <http://localhost:8080> and NGINX will happily redirect the request and proxy all your services so your browser thinks it's all one and the same protocol/domain/port == CORS bliss.
+##  Authentication (JWT)
 
-### Can this be used for production?
+### Get Token
 
-This project is focused on making it easier to perform local full stack development.  However, it is possible to add new docker compose and docker files to also support production.  It's just out of scope for this project.  Please have a look in the archives folder for some old production docker files to give you an idea of what worked in the past.
+```bash
+POST /api/token/
+```
+
+```json
+{
+  "username": "admin",
+  "password": "yourpassword"
+}
+```
+
+### Response
+
+```json
+{
+  "access": "jwt_access_token",
+  "refresh": "jwt_refresh_token"
+}
+```
+
+---
+
+##  API Endpoints
+
+### Test API
+
+```
+GET /api/test/
+```
+
+Response:
+
+```json
+{
+  "backend": "Django",
+  "database": "Postgres",
+  "status": "connected",
+  "framework": "React"
+}
+```
+
+---
+
+### Create Post
+
+```
+POST /api/create_post/
+```
+
+Body:
+
+```json
+{
+  "name": "John",
+  "email": "john@example.com",
+  "subject": "Hello",
+  "message": "This is a test",
+  "discription": "Demo post"
+}
+```
+
+---
+
+##  Development Notes
+
+### React API Layer
+
+Frontend uses Axios:
+
+```js
+const API_BASE_URL = "/api";
+```
+
+All requests go through Nginx → Django.
+
+---
+
+### CSRF Note
+
+For API testing:
+
+* Use `@csrf_exempt` or
+* Use JWT Authentication (recommended)
+
+---
+
+##  Database
+Tables are auto-generated via Django ORM:
+
+```bash
+docker exec -it dev-django python manage.py migrate
+```
+
+Check DB:
+
+```sql
+SELECT * FROM core_posts;
+```
+
+---
+
+##  Useful Commands
+
+### Django shell
+
+```bash
+docker exec -it dev-django python manage.py shell
+```
+
+### Create superuser
+
+```bash
+docker exec -it dev-django python manage.py createsuperuser
+```
+
+### Logs
+
+```bash
+docker logs dev-django -f
+```
+
+---
+
+##  Known Issues
+* React service worker may cache old builds
+* Ensure `.env.dev` is configured correctly
+* Django CSRF required for non-API endpoints
+
+---
+
+##  Future Improvements
+
+* [ ] Add Role-based Access Control (RBAC)
+* [ ] Add Redux Toolkit / Zustand
+* [ ] Add CI/CD pipeline (GitHub Actions)
+* [ ] Add WebSocket (Django Channels)
+* [ ] Add Swagger API documentation
+* [ ] Add production HTTPS (Let’s Encrypt)
+
+---
+
+
+
+Built for learning production-ready full-stack architecture:
+
+* Django Backend
+* React Frontend
+* Dockerized Microservices
+
+---

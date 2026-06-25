@@ -1,16 +1,19 @@
 # pull official base image
-FROM node:lts-slim
+FROM node:18-bullseye
 
 # set work directory
-WORKDIR /srv/app/
+WORKDIR /srv/app
 
-# add to $PATH
-ENV PATH /srv/app/node_modules/.bin:$PATH
+# add node_modules binaries to PATH
+ENV PATH=/srv/app/node_modules/.bin:$PATH
 
-# install app dependencies
-COPY package.json ./
-COPY package-lock.json ./
+# install dependencies
+COPY package.json package-lock.json ./
+
 RUN npm install
 
-# add app
-COPY . ./
+# copy source code
+COPY . .
+
+# run react
+CMD ["npm", "start"]
