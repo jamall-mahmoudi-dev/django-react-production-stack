@@ -1,4 +1,4 @@
-FROM nginx:stable-alpine
+FROM nginx:stable-alpine # base image
 
 RUN rm /etc/nginx/conf.d/default.conf
 
