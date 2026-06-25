@@ -6,6 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Posts
 from .serializers import PostSerializer
+from drf_spectacular.utils import extend_schema
+
 
 
 # Create your views here.
@@ -41,7 +43,7 @@ def create_item(request):
 
 
 
-
+@extend_schema(request=PostSerializer, responses=PostSerializer)
 @api_view(["POST"])
 def create_post(request):
     serializer = PostSerializer(data=request.data)
